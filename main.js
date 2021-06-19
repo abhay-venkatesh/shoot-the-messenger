@@ -107,9 +107,6 @@ function removeBadRowsFromDOM() {
 }
 
 async function unsendAllVisibleMessages(lastRun, count) {
-  console.log("sleeping for 30 seconds");
-  await sleep(30000);
-
   // Start by removing messages that cant be unsent (due to fb being weird).
   removeBadRowsFromDOM();
 
@@ -220,12 +217,12 @@ async function unsendAllVisibleMessages(lastRun, count) {
   }
 
   // And then run the whole thing again after 500ms for loading if we didnt
-  // have any removals (to zoom up quickly), or 5s if we did have removals to
+  // have any removals (to zoom up quickly), or 30s if we did have removals to
   // avoid any rate limiting.
   if (more_button_count === 0) {
     return { status: STATUS.CONTINUE, data: 500 };
   } else {
-    return { status: STATUS.CONTINUE, data: 5000 };
+    return { status: STATUS.CONTINUE, data: 30000 };
   }
 }
 
