@@ -24,9 +24,12 @@
       });
     } else if (request.action === "REMOVE") {
       // Begin removing message information.
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { tabId: tabs[0].id, ...request });
-      });
+      chrome.tabs.query(
+        { active: true, currentWindow: true }, 
+        (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { tabId: tabs[0].id, ...request });
+        },
+      );
     } else if (request.action === "SCROLL") {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { tabId: tabs[0].id, ...request });

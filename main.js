@@ -107,6 +107,8 @@ function removeBadRowsFromDOM() {
 }
 
 async function unsendAllVisibleMessages(lastRun, count) {
+  await sleep(30000);
+
   // Start by removing messages that cant be unsent (due to fb being weird).
   removeBadRowsFromDOM();
 
