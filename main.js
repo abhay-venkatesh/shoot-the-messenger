@@ -177,7 +177,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
           [...unsend_buttons].map((el) => {
             el.remove();
           });
-          unsend_buttons = [];
+          unsend_buttons.length = 0;
         }
       }
 
@@ -187,7 +187,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
           el.remove();
         });
         console.log("too many removes, skipping");
-        remove_buttons = [];
+        remove_buttons.length = 0;
       }
     }
     more_buttons = [...document.querySelectorAll(MORE_BUTTONS_QUERY)].filter(
