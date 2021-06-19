@@ -172,20 +172,22 @@ async function unsendAllVisibleMessages(lastRun, count) {
 
         await sleep(5000);
         unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
-        if(numUnsendTrials > 3) {
+        if(numUnsendTrials >= 3) {
           console.log("too many unsends, skipping");
           [...unsend_buttons].map((el) => {
             el.remove();
           });
+          unsend_buttons = [];
         }
       }
 
       remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
-      if (numRemoveTrials > 3) {
+      if (numRemoveTrials >= 3) {
         [...remove_buttons].map((el) => {
           el.remove();
         });
         console.log("too many removes, skipping");
+        remove_buttons = [];
       }
     }
     more_buttons = [...document.querySelectorAll(MORE_BUTTONS_QUERY)].filter(
