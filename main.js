@@ -107,6 +107,7 @@ function removeBadRowsFromDOM() {
 }
 
 async function unsendAllVisibleMessages(lastRun, count) {
+  console.log("sleeping for 30 seconds");
   await sleep(30000);
 
   // Start by removing messages that cant be unsent (due to fb being weird).
