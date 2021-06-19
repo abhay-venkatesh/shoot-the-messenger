@@ -172,7 +172,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
 
         await sleep(5000);
         unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
-        if(numUnsendTrials > 5) {
+        if(numUnsendTrials > 3) {
           console.log("too many unsends, skipping");
           [...unsend_buttons].map((el) => {
             el.remove();
@@ -181,7 +181,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
       }
 
       remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
-      if (numRemoveTrials > 5) {
+      if (numRemoveTrials > 3) {
         [...remove_buttons].map((el) => {
           el.remove();
         });
