@@ -153,13 +153,15 @@ async function unsendAllVisibleMessages(lastRun, count) {
       await sleep(5000);
       let unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
 
+      let numTrials = 0;
       while (unsend_buttons.length > 0) {
+        numTrials++;
         console.log('Unsending: ', unsend_buttons);
         for (let unsend_button of unsend_buttons) {
           unsend_button.click();
         }
-        console.log("sleeping for 30s");
-        await sleep(30000);
+        console.log("sleeping for 5s times %d", numTrials);
+        await sleep(5000 * numTrials);
         unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
       }
 
