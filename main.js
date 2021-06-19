@@ -129,6 +129,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
   const more_button_count = more_buttons.length;
   console.log('Clicking more buttons: ', more_buttons);
 
+  let numRemoveTrials = 0;
   while (more_buttons.length > 0) {
     console.log('Clicking more buttons: ', more_buttons);
     [...more_buttons].map((el) => {
@@ -144,28 +145,48 @@ async function unsendAllVisibleMessages(lastRun, count) {
     // Click on all of the 'remove' popups that appear.
     let remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
     while (remove_buttons.length > 0) {
+      await sleep(5000);
+
       console.log('Clicking remove buttons: ', remove_buttons);
       [...remove_buttons].map((el) => {
         el.click();
       });
 
+      numRemoveTrials++;
+      console.log("remove trial %d", numRemoveTrials);
+
       // Click on all of the 'confirm remove' buttons.
       await sleep(5000);
       let unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
 
-      let numTrials = 0;
+      let numUnsendTrials = 0;
+      let currUnsendButtons = [];
       while (unsend_buttons.length > 0) {
-        numTrials++;
         console.log('Unsending: ', unsend_buttons);
         for (let unsend_button of unsend_buttons) {
           unsend_button.click();
         }
-        console.log("sleeping for 5s times %d", numTrials);
-        await sleep(5000 * numTrials);
+
+        numUnsendTrials++;
+        console.log("Unsend trial %d", numUnsendTrials)
+
+        await sleep(5000);
         unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
+        if(numUnsendTrials > 5) {
+          console.log("too many unsends, skipping");
+          [...unsend_buttons].map((el) => {
+            el.remove();
+          });
+        }
       }
 
       remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
+      if (numRemoveTrials > 5) {
+        [...remove_buttons].map((el) => {
+          el.remove();
+        });
+        console.log("too many removes, skipping");
+      }
     }
     more_buttons = [...document.querySelectorAll(MORE_BUTTONS_QUERY)].filter(
       (el) => {
