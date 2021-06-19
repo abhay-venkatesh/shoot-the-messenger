@@ -178,8 +178,8 @@ async function unsendAllVisibleMessages(lastRun, count) {
             el.remove();
           });
           unsend_buttons.length = 0;
-          console.log("also sleeping for 30s");
-          await sleep(30000);
+          console.log("also sleeping for 45s");
+          await sleep(45000);
         }
       }
 
@@ -190,8 +190,8 @@ async function unsendAllVisibleMessages(lastRun, count) {
         });
         console.log("too many removes, skipping");
         remove_buttons.length = 0;
-        console.log("also sleeping for 30s");
-        await sleep(30000);
+        console.log("also sleeping for 45s");
+        await sleep(45000);
       }
     }
     more_buttons = [...document.querySelectorAll(MORE_BUTTONS_QUERY)].filter(
