@@ -231,11 +231,12 @@ async function unsendAllVisibleMessages(lastRun, count) {
       }
 
       // Don't continue until the loading animation is gone.
-      await sleep(2000);
+      await sleep(5000);
       loader = document.querySelector(LOADING_QUERY);
       console.log('Waiting for loading messages to populate...', loader);
-      await sleep(2000);
+      await sleep(5000);
       loaderFailsafe--;
+      console.log("%d scroll up attempts remaining", loaderFailsafe);
     } while (loader && loaderFailsafe > 0);
   } else {
     // Something is wrong. We dont have load more OR scrolling, but we havent
