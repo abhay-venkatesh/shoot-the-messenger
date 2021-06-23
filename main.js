@@ -129,6 +129,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
   const more_button_count = more_buttons.length;
   console.log('Clicking more buttons: ', more_buttons);
 
+  let numRemoveTrials = 0;
   while (more_buttons.length > 0) {
     console.log('Clicking more buttons: ', more_buttons);
     [...more_buttons].map((el) => {
@@ -144,25 +145,54 @@ async function unsendAllVisibleMessages(lastRun, count) {
     // Click on all of the 'remove' popups that appear.
     let remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
     while (remove_buttons.length > 0) {
+      await sleep(5000);
+
       console.log('Clicking remove buttons: ', remove_buttons);
       [...remove_buttons].map((el) => {
         el.click();
       });
 
+      numRemoveTrials++;
+      console.log("remove trial %d", numRemoveTrials);
+
       // Click on all of the 'confirm remove' buttons.
       await sleep(5000);
       let unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
 
+      let numUnsendTrials = 0;
+      let currUnsendButtons = [];
       while (unsend_buttons.length > 0) {
         console.log('Unsending: ', unsend_buttons);
         for (let unsend_button of unsend_buttons) {
           unsend_button.click();
         }
+
+        numUnsendTrials++;
+        console.log("Unsend trial %d", numUnsendTrials)
+
         await sleep(5000);
         unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
+        if(numUnsendTrials >= 3) {
+          console.log("too many unsends, skipping");
+          [...unsend_buttons].map((el) => {
+            el.remove();
+          });
+          unsend_buttons.length = 0;
+          console.log("also sleeping for 45s");
+          await sleep(45000);
+        }
       }
 
       remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
+      if (numRemoveTrials >= 3) {
+        [...remove_buttons].map((el) => {
+          el.remove();
+        });
+        console.log("too many removes, skipping");
+        remove_buttons.length = 0;
+        console.log("also sleeping for 45s");
+        await sleep(45000);
+      }
     }
     more_buttons = [...document.querySelectorAll(MORE_BUTTONS_QUERY)].filter(
       (el) => {
@@ -217,12 +247,12 @@ async function unsendAllVisibleMessages(lastRun, count) {
   }
 
   // And then run the whole thing again after 500ms for loading if we didnt
-  // have any removals (to zoom up quickly), or 5s if we did have removals to
+  // have any removals (to zoom up quickly), or 30s if we did have removals to
   // avoid any rate limiting.
   if (more_button_count === 0) {
     return { status: STATUS.CONTINUE, data: 500 };
   } else {
-    return { status: STATUS.CONTINUE, data: 5000 };
+    return { status: STATUS.CONTINUE, data: 30000 };
   }
 }
 
