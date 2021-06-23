@@ -223,7 +223,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
     let loader = null;
 
     // Sometimes the loader gets stuck. Move on after some attempts.
-    let loaderFailsafe = 6;
+    let loaderFailsafe = 16;
     do {
       // If we don't have any load more buttons, just try scrolling up.
       console.log('Trying to scroll up.');
@@ -234,10 +234,12 @@ async function unsendAllVisibleMessages(lastRun, count) {
       }
 
       // Don't continue until the loading animation is gone.
-      await sleep(8000);
+      console.log('sleeping for 2s before getting loader');
+      await sleep(2000);
       loader = document.querySelector(LOADING_QUERY);
       console.log('Waiting for loading messages to populate...', loader);
-      await sleep(8000);
+      console.log('sleeping for 2s while waiting');
+      await sleep(2000);
       loaderFailsafe--;
       console.log("%d scroll up attempts remaining", loaderFailsafe);
     } while (loader && loaderFailsafe > 0);
@@ -297,6 +299,24 @@ function scrollToBottomHelper() {
 async function scrollToBottom(limit) {
   for (let i = 0; i < limit; ++i) {
     scrollToBottomHelper();
+    await sleep(2000);
+  }
+}
+
+async function scrollToTopHelper() {
+  console.log('Trying to scroll up.');
+  const scroller_ = document.querySelector(SCROLLER_QUERY);
+  let topOfChain = document.querySelector(TOP_OF_CHAIN_QUERY);
+  console.log("topOfChain=", topOfChain);
+  while(topOfChain == null) {
+    console.log("scrolling");
+    try {
+      scroller_.scrollTop = 0;
+    } catch (err) {
+      console.log(err);
+    }
+    topOfChain = document.querySelector(TOP_OF_CHAIN_QUERY);
+    console.log("sleeping for 2s");
     await sleep(2000);
   }
 }
@@ -368,7 +388,9 @@ async function removeHandler(tabId) {
         });
       }
     } else if (msg.action === 'SCROLL') {
+      console.log("attempting to scroll to bottom");
       scrollToBottom(100);
+      // await scrollToTopHelper();
     } else if (msg.action === 'RELOAD') {
       window.location = window.location.pathname;
     } else {
