@@ -129,7 +129,6 @@ async function unsendAllVisibleMessages(lastRun, count) {
   const more_button_count = more_buttons.length;
   console.log('Clicking more buttons: ', more_buttons);
 
-  let numRemoveTrials = 0;
   while (more_buttons.length > 0) {
     console.log('Clicking more buttons: ', more_buttons);
     [...more_buttons].map((el) => {
@@ -143,8 +142,10 @@ async function unsendAllVisibleMessages(lastRun, count) {
     await sleep(2000);
 
     // Click on all of the 'remove' popups that appear.
+    let numRemoveTrials = 0;
     let remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
     while (remove_buttons.length > 0) {
+      console.log("remove_buttons.length=%d", remove_buttons.length);
       await sleep(5000);
 
       console.log('Clicking remove buttons: ', remove_buttons);
@@ -160,8 +161,8 @@ async function unsendAllVisibleMessages(lastRun, count) {
       let unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
 
       let numUnsendTrials = 0;
-      let currUnsendButtons = [];
       while (unsend_buttons.length > 0) {
+        console.log("unsend_buttons.length=%d", unsend_buttons.length);
         console.log('Unsending: ', unsend_buttons);
         for (let unsend_button of unsend_buttons) {
           unsend_button.click();
@@ -177,6 +178,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
           [...unsend_buttons].map((el) => {
             el.remove();
           });
+          console.log("clearing unsend buttons");
           unsend_buttons.length = 0;
           console.log("also sleeping for 45s");
           await sleep(45000);
@@ -185,10 +187,11 @@ async function unsendAllVisibleMessages(lastRun, count) {
 
       remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
       if (numRemoveTrials >= 3) {
+        console.log("too many removes, skipping");
         [...remove_buttons].map((el) => {
           el.remove();
         });
-        console.log("too many removes, skipping");
+        console.log("clearing remove buttons");
         remove_buttons.length = 0;
         console.log("also sleeping for 45s");
         await sleep(45000);
@@ -220,7 +223,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
     let loader = null;
 
     // Sometimes the loader gets stuck. Move on after some attempts.
-    let loaderFailsafe = 3;
+    let loaderFailsafe = 16;
     do {
       // If we don't have any load more buttons, just try scrolling up.
       console.log('Trying to scroll up.');
@@ -231,11 +234,14 @@ async function unsendAllVisibleMessages(lastRun, count) {
       }
 
       // Don't continue until the loading animation is gone.
+      console.log('sleeping for 2s before getting loader');
       await sleep(2000);
       loader = document.querySelector(LOADING_QUERY);
       console.log('Waiting for loading messages to populate...', loader);
+      console.log('sleeping for 2s while waiting');
       await sleep(2000);
       loaderFailsafe--;
+      console.log("%d scroll up attempts remaining", loaderFailsafe);
     } while (loader && loaderFailsafe > 0);
   } else {
     // Something is wrong. We dont have load more OR scrolling, but we havent
@@ -293,6 +299,24 @@ function scrollToBottomHelper() {
 async function scrollToBottom(limit) {
   for (let i = 0; i < limit; ++i) {
     scrollToBottomHelper();
+    await sleep(2000);
+  }
+}
+
+async function scrollToTopHelper() {
+  console.log('Trying to scroll up.');
+  const scroller_ = document.querySelector(SCROLLER_QUERY);
+  let topOfChain = document.querySelector(TOP_OF_CHAIN_QUERY);
+  console.log("topOfChain=", topOfChain);
+  while(topOfChain == null) {
+    console.log("scrolling");
+    try {
+      scroller_.scrollTop = 0;
+    } catch (err) {
+      console.log(err);
+    }
+    topOfChain = document.querySelector(TOP_OF_CHAIN_QUERY);
+    console.log("sleeping for 2s");
     await sleep(2000);
   }
 }
@@ -364,7 +388,9 @@ async function removeHandler(tabId) {
         });
       }
     } else if (msg.action === 'SCROLL') {
+      console.log("attempting to scroll to bottom");
       scrollToBottom(100);
+      // await scrollToTopHelper();
     } else if (msg.action === 'RELOAD') {
       window.location = window.location.pathname;
     } else {
