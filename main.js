@@ -129,7 +129,6 @@ async function unsendAllVisibleMessages(lastRun, count) {
   const more_button_count = more_buttons.length;
   console.log('Clicking more buttons: ', more_buttons);
 
-  let numRemoveTrials = 0;
   while (more_buttons.length > 0) {
     console.log('Clicking more buttons: ', more_buttons);
     [...more_buttons].map((el) => {
@@ -143,8 +142,10 @@ async function unsendAllVisibleMessages(lastRun, count) {
     await sleep(2000);
 
     // Click on all of the 'remove' popups that appear.
+    let numRemoveTrials = 0;
     let remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
     while (remove_buttons.length > 0) {
+      console.log("remove_buttons.length=%d", remove_buttons.length);
       await sleep(5000);
 
       console.log('Clicking remove buttons: ', remove_buttons);
@@ -160,8 +161,8 @@ async function unsendAllVisibleMessages(lastRun, count) {
       let unsend_buttons = document.querySelectorAll(REMOVE_CONFIRMATION_QUERY);
 
       let numUnsendTrials = 0;
-      let currUnsendButtons = [];
       while (unsend_buttons.length > 0) {
+        console.log("unsend_buttons.length=%d", unsend_buttons.length);
         console.log('Unsending: ', unsend_buttons);
         for (let unsend_button of unsend_buttons) {
           unsend_button.click();
@@ -177,6 +178,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
           [...unsend_buttons].map((el) => {
             el.remove();
           });
+          console.log("clearing unsend buttons");
           unsend_buttons.length = 0;
           console.log("also sleeping for 45s");
           await sleep(45000);
@@ -185,10 +187,11 @@ async function unsendAllVisibleMessages(lastRun, count) {
 
       remove_buttons = document.querySelectorAll(REMOVE_BUTTON_QUERY);
       if (numRemoveTrials >= 3) {
+        console.log("too many removes, skipping");
         [...remove_buttons].map((el) => {
           el.remove();
         });
-        console.log("too many removes, skipping");
+        console.log("clearing remove buttons");
         remove_buttons.length = 0;
         console.log("also sleeping for 45s");
         await sleep(45000);
