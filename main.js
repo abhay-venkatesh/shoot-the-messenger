@@ -220,7 +220,7 @@ async function unsendAllVisibleMessages(lastRun, count) {
     let loader = null;
 
     // Sometimes the loader gets stuck. Move on after some attempts.
-    let loaderFailsafe = 3;
+    let loaderFailsafe = 6;
     do {
       // If we don't have any load more buttons, just try scrolling up.
       console.log('Trying to scroll up.');
